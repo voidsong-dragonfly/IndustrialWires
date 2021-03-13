@@ -55,7 +55,12 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 			return false;
 		}
 		p.setPos(0, -1, 0);
-		return MechMBPart.isValidDefaultCenter(w.getBlockState(p));
+		return MechMBPart.isHeavyEngineering(w.getBlockState(p));
+	}
+
+	private boolean isBearingPerfect(LocalSidedWorld w, BlockPos.PooledMutableBlockPos p) {
+		p.setPos(0, 0, 0);
+		return MechMBPart.isPerfectBearing(w.getBlockState(p));
 	}
 
 	private void formEnd(LocalSidedWorld w, BlockPos.PooledMutableBlockPos p, MechanicalMBBlockType type,
@@ -88,6 +93,8 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 			List<MechMBPart> parts = new ArrayList<>();
 			int lastLength = 1;
 			double weight = 0;
+			boolean isLossless1 = false;
+			boolean isLossless = false;
 			while (!foundAll) {
 				mutPos.setPos(0, 0, lastLength);
 				w.setOrigin(w.getRealPos(mutPos));
@@ -95,10 +102,12 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 				List<MechMBPart> instances = new ArrayList<>(MechMBPart.INSTANCES.values());
 				instances.sort(MechMBPart.SORT_BY_COUNT.reversed());
 				MechMBPart last = instances.get(0);
+				isLossless1 = isBearingPerfect(w, mutPos);
 				for (MechMBPart part:instances) {
 					if (MechMBPart.SORT_BY_COUNT.compare(last, part)!=0&&
 							checkEnd(w, mutPos)) {
 						foundAll = true;
+						isLossless = isLossless1 && isBearingPerfect(w, mutPos);
 						break;
 					}
 					last = part;
@@ -121,12 +130,14 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 				return false;
 			}
 			double finalWeight = weight;
+			boolean finalIsLossless = isLossless;
 			w.setOrigin(pos);
 			formEnd(w, mutPos, END, (te, master) -> {
 				if (master) {
 					te.offset = BlockPos.ORIGIN;
 					te.setMechanical(parts.toArray(new MechMBPart[0]), 0);
 					te.energyState = new MechEnergy(finalWeight, 0);
+					te.isLossless = finalIsLossless;
 				} else {
 					te.offset = new BlockPos(0, -1, 0);
 				}

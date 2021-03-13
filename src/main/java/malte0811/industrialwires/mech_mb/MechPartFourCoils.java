@@ -47,7 +47,7 @@ public class MechPartFourCoils extends MechPartSingleCoil {
 	public boolean canForm(LocalSidedWorld w) {
 		BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain(0, 0, 0);
 		try {
-			if (!isValidDefaultCenter(w.getBlockState(pos))) {
+			if (!isHeavyEngineering(w.getBlockState(pos))) {
 				return false;
 			}
 			for (int i = 0; i < 2; i++) {

@@ -124,7 +124,7 @@ public class MechPartFlywheel extends MechMBPart {
 				}
 			}
 			pos.setPos(0, 0, 0);
-			return isValidDefaultCenter(w.getBlockState(pos));
+			return isHeavyEngineering(w.getBlockState(pos));
 		} finally {
 			pos.release();
 		}

@@ -60,6 +60,7 @@ public final class NBTKeys {
 	public static final String WAVEFORM = "Wf";
 	public static final String MAX_SPEED = "maxSpeed";
 	public static final String SIDE_CONFIG = "sideConfig";
+	public static final String LOSSLESS = "lossless";
 
 
 	private NBTKeys() {}

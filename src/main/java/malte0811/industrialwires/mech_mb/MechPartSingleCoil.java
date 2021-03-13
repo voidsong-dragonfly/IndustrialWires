@@ -139,7 +139,7 @@ public class MechPartSingleCoil extends MechMBPart implements IMBPartElectric {
 	public boolean canForm(LocalSidedWorld w) {
 		BlockPos.PooledMutableBlockPos pos = BlockPos.PooledMutableBlockPos.retain(0, 0, 0);
 		try {
-			if (!isValidDefaultCenter(w.getBlockState(pos))) {
+			if (!isHeavyEngineering(w.getBlockState(pos))) {
 				return false;
 			}
 			pos.setPos(0, 1, 0);

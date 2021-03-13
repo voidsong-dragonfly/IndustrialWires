@@ -34,11 +34,12 @@ public enum Material {
 	//Tensile strength is a guess ((GOLD+SILVER)/2), if anyone has better data I'll put it in
 	ELECTRUM((SILVER.density + GOLD.density) / 2e3, (SILVER.tensileStrength + GOLD.tensileStrength) / 2e6, "blocks/storage_electrum"),
 	IRON(7.874, 350, new ResourceLocation("minecraft", "blocks/iron_block")),
-	UHCSTEEL(7.874, 1250, "blocks/storage_steel"),
-    HCSTEEL(7.7, 920, new ResourceLocation("contenttweaker", "blocks/high_carbon_steel_block")),
-    MARAGINGSTEEL(8.1, 2400, new ResourceLocation("contenttweaker", "blocks/maraging_steel_block")),
-    TUNGSTENSTEEL(13.6, 3200, new ResourceLocation("contenttweaker", "blocks/tungstensteel_block"));
-    //Removed diamond because they cause the wrong kind of incentive & don't make much sense. Tungstensteel or Maraging Steel would be better.
+	STEEL(7.874, 1250, "blocks/storage_steel"),
+    MARAGINGSTEEL(8.1, 2400, new ResourceLocation("industrialwires", "blocks/storage_maragingsteel")),
+    TUNGSTENSTEEL(13.6, 3200, new ResourceLocation("industrialwires", "blocks/storage_tungstensteel")),
+	//This is mostly guesswork but it does follow common values
+	CARBONFIBER(2.8, 7000, new ResourceLocation("industrialwires", "blocks/storage_carbonfiber"));
+    //Removed diamond because they cause the wrong kind of incentive & don't make much sense. Use carbon fiber
 	//DIAMOND(3.5, 2800, new ResourceLocation("minecraft", "blocks/diamond_block")),
 	//Removed this because I made IE Uranium UO2, and because I need manual display space for other stuff
 	//URANIUM(19.1, 400, "blocks/storage_uranium_side");// This is a bit silly. But why not.

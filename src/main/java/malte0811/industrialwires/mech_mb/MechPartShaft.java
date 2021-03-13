@@ -65,7 +65,7 @@ public class MechPartShaft extends MechMBPart {
 
 	@Override
 	public boolean canForm(LocalSidedWorld world) {
-		return isValidDefaultCenter(world.getBlockState(BlockPos.ORIGIN));
+		return isHeavyEngineering(world.getBlockState(BlockPos.ORIGIN));
 	}
 
 	@Override

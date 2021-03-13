@@ -48,6 +48,7 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
@@ -225,12 +226,18 @@ public abstract class MechMBPart {
 	}
 
 	public static boolean isValidDefaultCenter(IBlockState state) {
-		return state.getBlock()== blockMetalDecoration0&&
-				state.getValue(blockMetalDecoration0.property)==BlockTypes_MetalDecoration0.HEAVY_ENGINEERING;
+		ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+		return Utils.compareToOreName(stack, "blockBearing") || Utils.compareToOreName(stack, "blockBearingPerfect");
+	}
+
+	public static boolean isPerfectBearing(IBlockState state) {
+		ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
+		return Utils.compareToOreName(stack, "blockBearingPerfect");
 	}
 
 	public static boolean isHeavyEngineering(IBlockState state) {
-		return isValidDefaultCenter(state);
+		return state.getBlock()== blockMetalDecoration0 &&
+				state.getValue(blockMetalDecoration0.property)==BlockTypes_MetalDecoration0.HEAVY_ENGINEERING;
 	}
 
 	public static boolean isLightEngineering(IBlockState state) {

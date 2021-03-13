@@ -17,6 +17,7 @@ package malte0811.industrialwires;
  import blusunrize.immersiveengineering.ImmersiveEngineering;
  import blusunrize.immersiveengineering.api.MultiblockHandler;
  import blusunrize.immersiveengineering.api.energy.wires.WireApi;
+ import blusunrize.immersiveengineering.common.blocks.metal.BlockTypes_MetalDecoration0;
  import com.google.common.collect.ImmutableMap;
  import malte0811.industrialwires.blocks.BlockIWBase;
  import malte0811.industrialwires.blocks.TEDataFixer;
@@ -70,6 +71,7 @@ package malte0811.industrialwires;
  import net.minecraftforge.fml.common.registry.EntityRegistry;
  import net.minecraftforge.fml.common.registry.GameRegistry;
  import net.minecraftforge.fml.relauncher.Side;
+ import net.minecraftforge.oredict.OreDictionary;
  import org.apache.logging.log4j.Logger;
 
  import java.util.ArrayList;
@@ -253,6 +255,9 @@ public class IndustrialWires {
 
 	@EventHandler
 	public void init(FMLInitializationEvent e) {
+
+		OreDictionary.registerOre("blockBearing", new ItemStack(IEObjects.blockMetalDecoration0, 1, BlockTypes_MetalDecoration0.HEAVY_ENGINEERING.getMeta()));
+
 		MultiblockMarx.INSTANCE = new MultiblockMarx();
 		MultiblockHandler.registerMultiblock(MultiblockMarx.INSTANCE);
 		MultiblockMechMB.INSTANCE = new MultiblockMechMB();

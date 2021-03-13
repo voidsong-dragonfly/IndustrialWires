@@ -34,10 +34,12 @@ import malte0811.industrialwires.mech_mb.*;
 import malte0811.industrialwires.network.MessageTileSyncIW;
 import malte0811.industrialwires.util.LocalSidedWorld;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.BlockStateBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -52,6 +54,7 @@ import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -81,6 +84,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	private int[][] electricalStartEnd = null;
 
 	public MechEnergy energyState;
+	public boolean isLossless;
 	private double lastSyncedSpeed = 0;
 	private double decay;
 	public double angle;
@@ -308,6 +312,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			out.setDouble(SPEED, energyState.getSpeed());
 		}
 		out.setInteger(VERSION, structureVersion);
+		out.setBoolean(LOSSLESS, isLossless);
 	}
 
 	@Override
@@ -325,6 +330,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			setMechanical(mech, in.getDouble(SPEED));
 		}
 		structureVersion = in.getInteger(VERSION);
+		isLossless = in.getBoolean(LOSSLESS);
 		rBB = null;
 		aabb = null;
 	}
@@ -352,7 +358,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			electrical.add(new int[]{lastEStart, mechanical.length});
 		}
 		electricalStartEnd = electrical.toArray(new int[electrical.size()][]);
-		decay = Math.pow(DECAY_BASE, mechanical.length);
+		decay = (isLossless) ? 1 : Math.pow(DECAY_BASE, mechanical.length);
 		if (energyState!=null) {
 			energyState.invalid = true;
 		}
@@ -489,6 +495,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	private void disassemble(Set<MechMBPart> failed) {
 		if (!world.isRemote && formed) {
 			formed = false;
+			//'Bearing Removal State' is to stick HE blocks where the bearings were. Not much I can do on that, sadly
 			world.setBlockState(pos,
 					blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
 			world.setBlockState(pos.down(),
