@@ -495,9 +495,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	private void disassemble(Set<MechMBPart> failed) {
 		if (!world.isRemote && formed) {
 			formed = false;
-			//'Bearing Removal State' is to stick HE blocks where the bearings were. Not much I can do on that, sadly
-			world.setBlockState(pos,
-					blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
+			world.setBlockState(pos, isLossless ? Block.getBlockFromItem(OreDictionary.getOres("blockBearingPerfect").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearingPerfect").get(0).getMetadata()) :  Block.getBlockFromItem(OreDictionary.getOres("blockBearing").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearing").get(0).getMetadata()));
 			world.setBlockState(pos.down(),
 					blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
 			for (MechMBPart mech : mechanical) {
@@ -522,10 +520,10 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			}
 			BlockPos otherEnd = offset(pos, facing.getOpposite(), mirrored, 0,
 					offsets[mechanical.length], 0);
-			world.setBlockState(otherEnd,
-					blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
-			world.setBlockState(otherEnd.down(),
-					blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
+
+			//Set the opposite end to the correct blocks
+			world.setBlockState(otherEnd, isLossless ? Block.getBlockFromItem(OreDictionary.getOres("blockBearingPerfect").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearingPerfect").get(0).getMetadata()) :  Block.getBlockFromItem(OreDictionary.getOres("blockBearing").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearing").get(0).getMetadata()));
+			world.setBlockState(otherEnd.down(), blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
 		}
 	}
 

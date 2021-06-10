@@ -67,7 +67,7 @@ repositories {
     maven {
         // HWYLA
         name "TehNut"
-        url "http://tehnut.info/maven/"
+        url "https://maven.tehnut.info"
     }
     repositories {//Curseforge maven for project red
         maven {
@@ -86,7 +86,7 @@ dependencies {
     deobfCompile "blusunrize:ImmersiveEngineering:0.12-+"
     compileOnly "pl.asie.charset:charset:0.5.6.4.19:full"
     //Project red and runtime dependencies
-    compileOnly "project-red-base:ProjectRed-1.12.2:4.9.1.92:Base"
+    compileOnly "project-red-core:ProjectRed-1.12.2:4.9.1.92:Base"
     //runtime "project-red-integration:ProjectRed-1.12.2:4.9.1.92:integration"
     //runtime "forge-multipart-cbe:ForgeMultipart-1.12.2:2.5.0.69:universal"
     //runtime "codechicken:CodeChickenLib:1.12.2-3.2.1.349:universal"

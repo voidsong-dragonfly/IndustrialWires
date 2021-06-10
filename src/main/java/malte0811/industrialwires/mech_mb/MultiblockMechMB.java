@@ -93,7 +93,7 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 			List<MechMBPart> parts = new ArrayList<>();
 			int lastLength = 1;
 			double weight = 0;
-			boolean isLossless1 = false;
+			boolean isLossless1 = isBearingPerfect(w, mutPos);;
 			boolean isLossless = false;
 			while (!foundAll) {
 				mutPos.setPos(0, 0, lastLength);
@@ -102,12 +102,15 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 				List<MechMBPart> instances = new ArrayList<>(MechMBPart.INSTANCES.values());
 				instances.sort(MechMBPart.SORT_BY_COUNT.reversed());
 				MechMBPart last = instances.get(0);
-				isLossless1 = isBearingPerfect(w, mutPos);
 				for (MechMBPart part:instances) {
-					if (MechMBPart.SORT_BY_COUNT.compare(last, part)!=0&&
-							checkEnd(w, mutPos)) {
+					if (MechMBPart.SORT_BY_COUNT.compare(last, part) != 0 && checkEnd(w, mutPos)) {
 						foundAll = true;
-						isLossless = isLossless1 && isBearingPerfect(w, mutPos);
+						if(isLossless1 != isBearingPerfect(w, mutPos)) {
+							return false;
+						} else if(isLossless1 && isBearingPerfect(w, mutPos)) {
+							isLossless = true;
+						}
+
 						break;
 					}
 					last = part;
