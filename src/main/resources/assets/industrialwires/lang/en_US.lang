@@ -66,7 +66,7 @@ industrialwires.desc.output=Main Output
 industrialwires.desc.alt=Replacement
 industrialwires.desc.ideal_e=Ideal Energy
 industrialwires.desc.inertia=Inertia
-industrialwires.desc.max_speed=Max. speed
+industrialwires.desc.max_speed=Max V
 industrialwires.desc.material=Material
 
 industrialwires.desc.wireLength=Wire length: %s block(s)

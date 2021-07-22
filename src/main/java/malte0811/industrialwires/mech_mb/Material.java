@@ -18,27 +18,33 @@ package malte0811.industrialwires.mech_mb;
 import blusunrize.immersiveengineering.ImmersiveEngineering;
 import blusunrize.immersiveengineering.common.util.Utils;
 import malte0811.industrialwires.util.LocalSidedWorld;
+import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
+import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.oredict.OreDictionary;
 
 public enum Material {
-	COPPER(8.96, 220, "blocks/storage_copper"),
-	ALUMINUM(2.7, 45, "blocks/storage_aluminum"),
-	LEAD(11.34, 12, "blocks/storage_lead"),
-	SILVER(10.49, 170, "blocks/storage_silver"),
-	NICKEL(8.908, 165, "blocks/storage_nickel"),
-	GOLD(19.3, 100, new ResourceLocation("minecraft", "blocks/gold_block")),
-	CONSTANTAN(8.885, 600, "blocks/storage_constantan"),
+	Copper(8.96, 220, "blocks/storage_copper"),
+	Aluminium(2.7, 45, "blocks/storage_aluminum"),
+	Lead(11.34, 12, "blocks/storage_lead"),
+	Silver(10.49, 170, "blocks/storage_silver"),
+	Nickel(8.908, 165, "blocks/storage_nickel"),
+	Gold(19.3, 100, new ResourceLocation("minecraft", "blocks/gold_block")),
+	Constantan(8.885, 600, "blocks/storage_constantan"),
 	//Tensile strength is a guess ((GOLD+SILVER)/2), if anyone has better data I'll put it in
-	ELECTRUM((SILVER.density + GOLD.density) / 2e3, (SILVER.tensileStrength + GOLD.tensileStrength) / 2e6, "blocks/storage_electrum"),
-	IRON(7.874, 350, new ResourceLocation("minecraft", "blocks/iron_block")),
-	STEEL(7.874, 1250, "blocks/storage_steel"),
-    MARAGINGSTEEL(8.1, 2400, new ResourceLocation("industrialwires", "blocks/storage_maragingsteel")),
-    TUNGSTENSTEEL(13.6, 3200, new ResourceLocation("industrialwires", "blocks/storage_tungstensteel")),
-	//This is mostly guesswork but it does follow common values
-	CARBONFIBER(2.8, 7000, new ResourceLocation("industrialwires", "blocks/storage_carbonfiber"));
+	Electrum((Silver.density + Gold.density) / 2e3, (Silver.tensileStrength + Gold.tensileStrength) / 2e6, "blocks/storage_electrum"),
+	Iron(7.874, 350, new ResourceLocation("minecraft", "blocks/iron_block")),
+	Steel(7.874, 1250, "blocks/storage_steel"),
+    MaragingSteel(8.1, 2400,  Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(OreDictionary.getOres("blockMaragingSteel").isEmpty() ? ItemStack.EMPTY : OreDictionary.getOres("blockMaragingSteel").get(0) , null, null).getParticleTexture()),
+    Tungstensteel(13.6, 3200, Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(OreDictionary.getOres("blockTungstensteel").isEmpty() ? ItemStack.EMPTY : OreDictionary.getOres("blockTungstensteel").get(0) , null, null).getParticleTexture()),
+	//Now for the fiber ones
+	BasaltFiber(2.65, 3100, Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(OreDictionary.getOres("blockBasaltFiber").isEmpty() ? ItemStack.EMPTY : OreDictionary.getOres("blockBasaltFiber").get(0) , null, null).getParticleTexture()),
+	CarbonFiber(1.6, 5600, Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(OreDictionary.getOres("blockCarbonFiber").isEmpty() ? ItemStack.EMPTY : OreDictionary.getOres("blockCarbonFiber").get(0) , null, null).getParticleTexture());
     //Removed diamond because they cause the wrong kind of incentive & don't make much sense. Use carbon fiber
 	//DIAMOND(3.5, 2800, new ResourceLocation("minecraft", "blocks/diamond_block")),
 	//Removed this because I made IE Uranium UO2, and because I need manual display space for other stuff
@@ -47,6 +53,7 @@ public enum Material {
 	public final double density;
 	public final double tensileStrength;
 	public final ResourceLocation blockTexture;
+	public final TextureAtlasSprite sprite;
 
 	// density as parameter: g/cm^3
 	// tStrength: MPa
@@ -55,11 +62,19 @@ public enum Material {
 		this.density = density*1e3;
 		this.tensileStrength = tensileStrength*1e6;
 		this.blockTexture = new ResourceLocation(ImmersiveEngineering.MODID, path);
+		this.sprite = null;
 	}
 	Material(double density, double tensileStrength, ResourceLocation loc) {
 		this.density = density*1e3;
 		this.tensileStrength = tensileStrength*1e6;
 		this.blockTexture = loc;
+		this.sprite = null;
+	}
+	Material(double density, double tensileStrength, TextureAtlasSprite loc) {
+		this.density = density*1e3;
+		this.tensileStrength = tensileStrength*1e6;
+		this.blockTexture = null;
+		this.sprite = loc;
 	}
 
 	public boolean matchesBlock(ItemStack block, String prefix) {
@@ -73,7 +88,7 @@ public enum Material {
 	}
 
 	public String oreName() {
-		return name().substring(0, 1)+name().substring(1).toLowerCase();
+		return name();
 	}
 
 	public boolean matchesBlock(LocalSidedWorld w, BlockPos relative, String prefix) {

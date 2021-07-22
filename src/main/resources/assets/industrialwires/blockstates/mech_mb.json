@@ -25,6 +25,9 @@
     "inventory,type=shaft_basic": [{}],
     "type": {
       "no_model": {
+        "textures": {
+          "particle": "immersiveengineering:blocks/storage_steel"
+        }
       },
       "end": {
         "model": "industrialwires:mech_mb/end.obj"

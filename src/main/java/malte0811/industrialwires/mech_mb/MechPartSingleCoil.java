@@ -101,7 +101,7 @@ public class MechPartSingleCoil extends MechMBPart implements IMBPartElectric {
 
 	@Override
 	public double getInertia() {
-		return Material.IRON.density + Material.COPPER.density;
+		return Material.Iron.density + Material.Copper.density;
 	}
 
 	@Override

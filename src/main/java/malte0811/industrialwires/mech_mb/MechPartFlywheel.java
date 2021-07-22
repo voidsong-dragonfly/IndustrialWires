@@ -91,7 +91,7 @@ public class MechPartFlywheel extends MechMBPart {
 	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> getRotatingQuads() {
 		List<BakedQuad> orig = super.getRotatingQuads();
-		TextureAtlasSprite newTex = Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(material.blockTexture.toString());
+		TextureAtlasSprite newTex = material.blockTexture == null ? material.sprite : Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(material.blockTexture.toString());
 		return orig.stream().map((quad)->{
 			if (quad.getSprite().getIconName().contains("steel")) {
 				return new BakedQuadRetextured(quad, newTex);
