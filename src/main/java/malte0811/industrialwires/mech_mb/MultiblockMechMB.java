@@ -92,7 +92,7 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 			boolean foundAll = false;
 			List<MechMBPart> parts = new ArrayList<>();
 			int lastLength = 1;
-			double weight = 0;
+			double inertia = 0;
 			boolean isLossless1 = isBearingPerfect(w, mutPos);;
 			boolean isLossless = false;
 			while (!foundAll) {
@@ -124,7 +124,7 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 				if (next != null) {
 					parts.add(next);
 					lastLength = next.getLength();
-					weight += next.getInertia();
+					inertia += next.getInertia();
 				} else if (!foundAll) {
 					return false;
 				}
@@ -132,14 +132,14 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 			if (parts.isEmpty()) {
 				return false;
 			}
-			double finalWeight = weight;
+			double finalInertia = inertia;
 			boolean finalIsLossless = isLossless;
 			w.setOrigin(pos);
 			formEnd(w, mutPos, END, (te, master) -> {
 				if (master) {
 					te.offset = BlockPos.ORIGIN;
 					te.setMechanical(parts.toArray(new MechMBPart[0]), 0);
-					te.energyState = new MechEnergy(finalWeight, 0);
+					te.energyState = new MechEnergy(finalInertia, 0);
 					te.isLossless = finalIsLossless;
 				} else {
 					te.offset = new BlockPos(0, -1, 0);

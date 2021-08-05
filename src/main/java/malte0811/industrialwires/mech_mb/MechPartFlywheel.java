@@ -41,9 +41,12 @@ import java.util.stream.Collectors;
 import static net.minecraft.util.math.BlockPos.ORIGIN;
 
 public class MechPartFlywheel extends MechMBPart {
-	private static final double RADIUS = 1.25;
+	//Technically larger due to not being a cylinder + middle stuff
+	//Most is 1.353, technically, but we can add a little as a treat
+	private static final double RADIUS_MAX = 1.3125;
+	private static final double RADIUS_MIN = 0.5;
 	private static final double THICKNESS = 1;
-	private static final double VOLUME = Math.PI*RADIUS*RADIUS*THICKNESS;
+	private static final double VOLUME = Math.PI*(RADIUS_MAX*RADIUS_MAX - RADIUS_MIN * RADIUS_MIN)*THICKNESS;
 	private Material material;
 	public MechPartFlywheel() {}
 
@@ -63,13 +66,12 @@ public class MechPartFlywheel extends MechMBPart {
 	public void insertMEnergy(double added) {}
 
 	@Override
-	public double getInertia() {
-		return .5*material.density*VOLUME*RADIUS*RADIUS;
-	}
+	//Formula for an annulus with r1 of MIN and r2 of MAX
+	public double getInertia() { return .5 * material.density*VOLUME*(RADIUS_MAX * RADIUS_MAX + RADIUS_MIN * RADIUS_MIN); }
 
 	@Override
 	public double getMaxSpeed() {
-		return Math.sqrt(material.tensileStrength /material.density)/RADIUS;
+		return Math.sqrt(material.tensileStrength / material.density)/RADIUS_MAX;
 	}
 
 	@Override

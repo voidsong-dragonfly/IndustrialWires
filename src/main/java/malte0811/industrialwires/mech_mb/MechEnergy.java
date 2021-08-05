@@ -21,15 +21,15 @@ import net.minecraft.util.math.MathHelper;
 public final class MechEnergy {
 	private double speed = 0;
 	public boolean invalid = false;
-	public final double weight;
+	public final double inertia;
 
-	public MechEnergy(double weight, double speed) {
-		this.weight = weight;
+	public MechEnergy(double intertia, double speed) {
+		this.inertia = intertia;
 		this.speed = speed;
 	}
 
 	public double getEnergy() {
-		return .5 * weight * speed * speed;
+		return .5 * inertia * speed * speed;
 	}
 
 	public double getSpeed() {
@@ -41,7 +41,7 @@ public final class MechEnergy {
 			return;
 		}
 		double targetEnergy = getEnergy() + energy;
-		speed = Math.sqrt(2 * targetEnergy / weight);
+		speed = Math.sqrt(2 * targetEnergy / inertia);
 	}
 
 	public void extractEnergy(double energy) {
@@ -50,7 +50,7 @@ public final class MechEnergy {
 		}
 		double oldEnergy = getEnergy();
 		energy = Math.min(energy, oldEnergy);
-		speed = Math.sqrt(2 * (oldEnergy - energy) / weight);
+		speed = Math.sqrt(2 * (oldEnergy - energy) / inertia);
 	}
 
 	public void decaySpeed(double decay) {
@@ -100,7 +100,7 @@ public final class MechEnergy {
 	private float getTotalVolume() {
 		if (invalid)
 			return 0;
-		float ret = (float) (weight / 20e3 * Math.tanh(getSpeedForSound()/30));
+		float ret = (float) (inertia / 20e3 * Math.tanh(getSpeedForSound()/30));
 		ret = Math.min(ret, 1F);
 		return ret;
 	}

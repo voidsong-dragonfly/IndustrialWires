@@ -338,13 +338,13 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	public void setMechanical(MechMBPart[] mech, double speed) {
 		mechanical = mech;
 		offsets = new int[mechanical.length+1];
-		double weight = 0;
+		double inertia = 0;
 		int offset = 1;
 		List<int[]> electrical = new ArrayList<>();
 		int lastEStart = -1;
 		for (int i = 0; i < mech.length; i++) {
 			offsets[i] = offset;
-			weight += mechanical[i].getInertia();
+			inertia += mechanical[i].getInertia();
 			offset += mechanical[i].getLength();
 			if (lastEStart < 0 && mechanical[i] instanceof IMBPartElectric) {
 				lastEStart = i;
@@ -362,7 +362,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 		if (energyState!=null) {
 			energyState.invalid = true;
 		}
-		energyState = new MechEnergy(weight, speed);
+		energyState = new MechEnergy(inertia, speed);
 	}
 
 	private int getPart(int offset, TileEntityMechMB master) {

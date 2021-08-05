@@ -260,28 +260,37 @@ public class ClientProxy extends CommonProxy {
 		m.addEntry("industrialwires.mech_mb", IndustrialWires.MODID, mechMBEntry.toArray(new IManualPage[0]));
 
 		String[][] flywheelTable;
+		String[][] flywheelTable2;
 		{
-			List<String[]> flywheelTableList = new ArrayList<>(1 + Material.values().length);
+			List<String[]> flywheelTableList = new ArrayList<>(Math.min(1 + Material.values().length, 14));
+			List<String[]> flywheelTableList2 = new ArrayList<>(1 + Math.min(Material.values().length - 13, 0));
 			flywheelTableList.add(new String[]{"industrialwires.desc.material", "industrialwires.desc.inertia", "industrialwires.desc.max_speed"});
+			flywheelTableList2.add(new String[]{"industrialwires.desc.material", "industrialwires.desc.inertia", "industrialwires.desc.max_speed"});
 			for (Material mat : Material.values()) {
 				MechPartFlywheel f = new MechPartFlywheel(mat);
-				flywheelTableList.add(new String[]{mat.oreName(), Utils.formatDouble(f.getInertia(), "0.#"),
-						Utils.formatDouble(f.getMaxSpeed(), "0.#")});
+				if(flywheelTableList.size() < 14) {
+					flywheelTableList.add(new String[]{mat.oreName(), Utils.formatDouble(f.getInertia(), "0.#"),
+							Utils.formatDouble(f.getMaxSpeed(), "0.#")});
+				} else
+					flywheelTableList2.add(new String[]{mat.oreName(), Utils.formatDouble(f.getInertia(), "0.#"),
+							Utils.formatDouble(f.getMaxSpeed(), "0.#")});
 			}
 			flywheelTable = flywheelTableList.toArray(new String[0][]);
+			flywheelTable2 = flywheelTableList2.toArray(new String[0][]);
 		}
 		text = I18n.format("ie.manual.entry.industrialwires.mech_mb_parts");
 		splitter = new TextSplitter(m);
 		splitter.addSpecialPage(0, 0, 10, (s) -> new ManualPageMultiblock(m, s,
 				MechMBPart.getManualMBForPart(MechPartFlywheel.class)));
 		splitter.addSpecialPage(1, 0, 1, s -> new ManualPages.Table(m, "", flywheelTable, true));
-		splitter.addSpecialPage(2, 0, 10, (s) -> new ManualPageMultiblock(m, s,
-				MechMBPart.getManualMBForPart(MechPartSingleCoil.class)));
+		splitter.addSpecialPage(2, 0, 1, s -> new ManualPages.Table(m, "", flywheelTable2, true));
 		splitter.addSpecialPage(3, 0, 10, (s) -> new ManualPageMultiblock(m, s,
+				MechMBPart.getManualMBForPart(MechPartSingleCoil.class)));
+		splitter.addSpecialPage(4, 0, 10, (s) -> new ManualPageMultiblock(m, s,
 				MechMBPart.getManualMBForPart(MechPartFourElectrodes.class)));
 		if (IWConfig.MechConversion.allowMBEU()) {
 			text += I18n.format("ie.manual.entry.industrialwires.mech_mb_parts.commutator");
-			splitter.addSpecialPage(4, 0, 10, (s) -> new ManualPageMultiblock(m, s,
+			splitter.addSpecialPage(5, 0, 10, (s) -> new ManualPageMultiblock(m, s,
 					MechMBPart.getManualMBForPart(MechPartCommutator4Phase.class)));
 		}
 		splitter.split(text);
