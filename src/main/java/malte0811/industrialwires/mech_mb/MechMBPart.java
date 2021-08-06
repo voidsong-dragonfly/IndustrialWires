@@ -76,6 +76,7 @@ public abstract class MechMBPart {
 	public abstract void insertMEnergy(double added);
 
 	public abstract double getInertia();
+	public abstract double getWeight();
 	public abstract double getMaxSpeed();
 	public abstract void writeToNBT(NBTTagCompound out);
 	public abstract void readFromNBT(NBTTagCompound in);

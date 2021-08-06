@@ -34,12 +34,10 @@ import malte0811.industrialwires.mech_mb.*;
 import malte0811.industrialwires.network.MessageTileSyncIW;
 import malte0811.industrialwires.util.LocalSidedWorld;
 import net.minecraft.block.Block;
-import net.minecraft.block.state.BlockStateBase;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
-import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -72,9 +70,7 @@ import static malte0811.industrialwires.util.NBTKeys.*;
 		@net.minecraftforge.fml.common.Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "ic2"),
 		@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2")
 })
-public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickable, ISyncReceiver,
-		IEnergySource, IEnergySink, IPlayerInteraction, IRedstoneOutput, IBlockBoundsDirectional {
-	private static final double DECAY_BASE = Math.exp(Math.log(.99375) / (60 * 60 * 20));
+public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickable, ISyncReceiver, IEnergySource, IEnergySink, IPlayerInteraction, IRedstoneOutput, IBlockBoundsDirectional {
 	public static final double TICK_ANGLE_PER_SPEED = 180 / 20 / Math.PI;
 	private static final double SYNC_THRESHOLD = .95;
 	private static final Map<BlockPos, TileEntityMechMB> CLIENT_MASTER_BY_POS = new MapMaker().weakValues().makeMap();
@@ -86,7 +82,6 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	public MechEnergy energyState;
 	public boolean isLossless;
 	private double lastSyncedSpeed = 0;
-	private double decay;
 	public double angle;
 	@SideOnly(Side.CLIENT)
 	public List<BakedQuad> rotatingModel;
@@ -210,7 +205,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 		}
 
 		//General
-		energyState.decaySpeed(decay);
+		energyState.decaySpeed(isLossless);
 		markDirty();
 		if (lastSyncedSpeed < energyState.getSpeed() * SYNC_THRESHOLD || lastSyncedSpeed > energyState.getSpeed() / SYNC_THRESHOLD) {
 			NBTTagCompound nbt = new NBTTagCompound();
@@ -247,8 +242,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	}
 
 	//return value is maximized to choose the waveform to use
-	private double transferElectric(int[] section, double[] available, Waveform[] availableWf, Waveform waveform,
-									double[] requested, boolean simulate) {
+	private double transferElectric(int[] section, double[] available, Waveform[] availableWf, Waveform waveform, double[] requested, boolean simulate) {
 		double totalAvailable = 0;
 		double totalRequested = 0;
 		for (int i = 0; i < available.length; i++) {
@@ -339,12 +333,14 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 		mechanical = mech;
 		offsets = new int[mechanical.length+1];
 		double inertia = 0;
+		double weight = 0;
 		int offset = 1;
 		List<int[]> electrical = new ArrayList<>();
 		int lastEStart = -1;
 		for (int i = 0; i < mech.length; i++) {
 			offsets[i] = offset;
 			inertia += mechanical[i].getInertia();
+			weight += mechanical[i].getWeight();
 			offset += mechanical[i].getLength();
 			if (lastEStart < 0 && mechanical[i] instanceof IMBPartElectric) {
 				lastEStart = i;
@@ -358,11 +354,10 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			electrical.add(new int[]{lastEStart, mechanical.length});
 		}
 		electricalStartEnd = electrical.toArray(new int[electrical.size()][]);
-		decay = (isLossless) ? 1 : Math.pow(DECAY_BASE, mechanical.length);
 		if (energyState!=null) {
 			energyState.invalid = true;
 		}
-		energyState = new MechEnergy(inertia, speed);
+		energyState = new MechEnergy(weight, inertia, speed);
 	}
 
 	private int getPart(int offset, TileEntityMechMB master) {

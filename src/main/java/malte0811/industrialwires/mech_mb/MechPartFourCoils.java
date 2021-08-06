@@ -97,7 +97,15 @@ public class MechPartFourCoils extends MechPartSingleCoil {
 
 	@Override
 	public double getMaxSpeed() {
-		return 500;
+		return 2500;
 	}
+
+	@Override
+	//Calculated from approximate shape if it were close to a flywheel
+	public double getInertia() {return 8100;}
+
+	@Override
+	//Calculated for the two coil parts of 0.73^3 m3 and the plate of 0.25m3
+	public double getWeight() { return 202850;}
 
 }

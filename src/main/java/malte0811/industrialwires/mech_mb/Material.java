@@ -20,12 +20,15 @@ import blusunrize.immersiveengineering.common.util.Utils;
 import malte0811.industrialwires.util.LocalSidedWorld;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.oredict.OreDictionary;
+
+import java.util.List;
 
 public enum Material {
 	//Metal materials in order of maxV
@@ -81,7 +84,8 @@ public enum Material {
 		this.blockTexture = null;
 		//Because we here at Industrial Wires hate our sanity, the universe, and ourselves : PersonTheCat and Silfryi present : "Getting the texture of an arbitrary block is a pain in our collective behinds"
 		ItemStack stack = OreDictionary.getOres(path).isEmpty() ? ItemStack.EMPTY : OreDictionary.getOres(path).get(0);
-		this.sprite = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, null).getQuads(Block.getBlockFromItem(stack.getItem()).getStateFromMeta(stack.getItemDamage()), EnumFacing.UP, 0L).get(0).getSprite();
+		List<BakedQuad> quads = Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, null).getQuads(Block.getBlockFromItem(stack.getItem()).getStateFromMeta(stack.getItemDamage()), EnumFacing.UP, 0L);
+		this.sprite = quads.isEmpty() ? Minecraft.getMinecraft().getRenderItem().getItemModelWithOverrides(stack, null, null).getParticleTexture() : quads.get(0).getSprite();
 	}
 
 	public boolean matchesBlock(ItemStack block, String prefix) {

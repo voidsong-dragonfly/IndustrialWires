@@ -44,8 +44,12 @@ public class MechPartShaft extends MechMBPart {
 
 	@Override
 	public double getInertia() {
-		return 5;
+		return 4;
 	}
+
+	@Override
+	//Calculated for a shaft of slightly larger than a 0.125 radius cylinder
+	public double getWeight() { return 3800;}
 
 	@Override
 	public double getMaxSpeed() {

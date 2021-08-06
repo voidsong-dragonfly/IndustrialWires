@@ -16,16 +16,19 @@
 package malte0811.industrialwires.mech_mb;
 
 
+import malte0811.industrialwires.IWConfig;
 import net.minecraft.util.math.MathHelper;
 
 public final class MechEnergy {
 	private double speed = 0;
 	public boolean invalid = false;
 	public final double inertia;
+	public final double weight;
 
-	public MechEnergy(double intertia, double speed) {
+	public MechEnergy(double weight, double intertia, double speed) {
 		this.inertia = intertia;
 		this.speed = speed;
+		this.weight = weight;
 	}
 
 	public double getEnergy() {
@@ -53,10 +56,13 @@ public final class MechEnergy {
 		speed = Math.sqrt(2 * (oldEnergy - energy) / inertia);
 	}
 
-	public void decaySpeed(double decay) {
-		speed *= decay;
-		if (speed < .01)
-			speed = 0;
+	public void decaySpeed(boolean lossless) {
+		//Decay should use https://www.researchgate.net/publication/241703345_Power_Loss_Prediction_in_High-Speed_Roller_Bearings and https://spectrum.ieee.org/superconducting-flywheel-grid-energy-storage (I guess on the last one)
+		//W to J/t is 3.6 because 86400 (sec per day) divided by 24000 (ticks per MC day) is 3.6
+		double energy = (lossless ? 0.00625 : 1) * 3.6 * Math.pow(1.125, 0.00545 * speed) * (weight/25000);
+		//Example function graph is here https://www.desmos.com/calculator/qz4wrimxqf
+		extractEnergy(energy);
+		if (speed < 0.1) speed = 0;
 	}
 
 	private static final int TICKS_FOR_ADJUSTMENT = 30;

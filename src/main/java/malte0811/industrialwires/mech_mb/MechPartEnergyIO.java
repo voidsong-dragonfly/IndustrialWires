@@ -153,6 +153,10 @@ public abstract class MechPartEnergyIO extends MechMBPart implements IMBPartElec
 	}
 
 	@Override
+	//Calculated for a shaft of slightly larger than a 0.125 radius cylinder
+	public double getWeight() { return 3800;}
+
+	@Override
 	public double getMaxSpeed() {
 		return IWConfig.MechConversion.allowMBEU()?100:-1;
 	}

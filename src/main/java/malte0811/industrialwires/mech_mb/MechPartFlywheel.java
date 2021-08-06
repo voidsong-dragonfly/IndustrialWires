@@ -42,11 +42,13 @@ import static net.minecraft.util.math.BlockPos.ORIGIN;
 
 public class MechPartFlywheel extends MechMBPart {
 	//Technically larger due to not being a cylinder + middle stuff
-	//Most is 1.353, technically, but we can add a little as a treat
-	private static final double RADIUS_MAX = 1.3125;
-	private static final double RADIUS_MIN = 0.5;
+	//Most is 1.4885, technically, but we add less than that because it's not consistent
+	private static final double RADIUS_MAX = 1.4375;
+	private static final double RADIUS_MIN = 0.75;
+	private static final double RADIUS_SHAFT = 0.25;
 	private static final double THICKNESS = 1;
 	private static final double VOLUME = Math.PI*(RADIUS_MAX*RADIUS_MAX - RADIUS_MIN * RADIUS_MIN)*THICKNESS;
+	private static final double VOLUME_STEEL = Math.PI*(RADIUS_SHAFT * RADIUS_SHAFT)*THICKNESS;
 	private Material material;
 	public MechPartFlywheel() {}
 
@@ -66,13 +68,20 @@ public class MechPartFlywheel extends MechMBPart {
 	public void insertMEnergy(double added) {}
 
 	@Override
+	public double getInertia() { return getFlywheelInertia() + getShaftConnectorInertia(); }
+
 	//Formula for an annulus with r1 of MIN and r2 of MAX
-	public double getInertia() { return .5 * material.density*VOLUME*(RADIUS_MAX * RADIUS_MAX + RADIUS_MIN * RADIUS_MIN); }
+	private double getFlywheelInertia() { return .5 * material.density*VOLUME*(RADIUS_MAX * RADIUS_MAX + RADIUS_MIN * RADIUS_MIN); }
+
+	//Standard cylindrical rotational inertia
+	private double getShaftConnectorInertia() { return .5 * Material.Steel.density * VOLUME_STEEL * (RADIUS_SHAFT * RADIUS_SHAFT); }
+
+	//Gotten from https://www.eolss.net/Sample-Chapters/C08/E3-14-03-03.pdf - slightly worse thin-rim web flywheel, with a mess of math in the background to go from KE per unit mass to max speed
+	@Override
+	public double getMaxSpeed() { return Math.sqrt(0.8 * VOLUME * material.tensileStrength/getFlywheelInertia()); }
 
 	@Override
-	public double getMaxSpeed() {
-		return Math.sqrt(material.tensileStrength / material.density)/RADIUS_MAX;
-	}
+	public double getWeight() { return 9.81 * (VOLUME * material.density + VOLUME_STEEL * Material.Steel.density); }
 
 	@Override
 	public void writeToNBT(NBTTagCompound out) {
@@ -86,7 +95,7 @@ public class MechPartFlywheel extends MechMBPart {
 
 	@Override
 	public ResourceLocation getRotatingBaseModel() {
-		return new ResourceLocation(IndustrialWires.MODID, "block/mech_mb/flywheel.obj");
+		return new ResourceLocation(IndustrialWires.MODID, "block/mech_mb/flywheel_extra_large.obj");
 	}
 
 	@Override
@@ -95,7 +104,7 @@ public class MechPartFlywheel extends MechMBPart {
 		List<BakedQuad> orig = super.getRotatingQuads();
 		TextureAtlasSprite newTex = material.blockTexture == null ? material.sprite : Minecraft.getMinecraft().getTextureMapBlocks().getAtlasSprite(material.blockTexture.toString());
 		return orig.stream().map((quad)->{
-			if (quad.getSprite().getIconName().contains("steel")) {
+			if (quad.getSprite().getIconName().contains("constantan")) {
 				return new BakedQuadRetextured(quad, newTex);
 			} else {
 				return quad;

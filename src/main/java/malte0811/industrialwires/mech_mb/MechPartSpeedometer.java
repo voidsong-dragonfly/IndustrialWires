@@ -114,6 +114,10 @@ public class MechPartSpeedometer extends MechMBPart implements IRedstoneOutput {
 	}
 
 	@Override
+	//Calculated for a shaft of slightly larger than a 0.125 radius cylinder
+	public double getWeight() { return 3800;}
+
+	@Override
 	public double getMaxSpeed() {
 		return 2 * speedFor15RS;
 	}

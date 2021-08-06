@@ -100,13 +100,16 @@ public class MechPartSingleCoil extends MechMBPart implements IMBPartElectric {
 	}
 
 	@Override
-	public double getInertia() {
-		return Material.Iron.density + Material.Copper.density;
-	}
+	//Calculated from approximate shape
+	public double getInertia() {return 4300;}
+
+	@Override
+	//Calculated for the two coil parts of 0.73^3 m3 and the plate of 0.25m3
+	public double getWeight() { return 92500;}
 
 	@Override
 	public double getMaxSpeed() {
-		return 100;
+		return 500;
 	}
 
 	@Override
