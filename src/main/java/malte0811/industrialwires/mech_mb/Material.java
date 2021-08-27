@@ -34,14 +34,17 @@ public enum Material {
 	//Metal materials in order of maxV
 	Lead(11.34, 12, "blocks/storage_lead"),
 	Gold(19.3, 100, new ResourceLocation("minecraft", "blocks/gold_block")),
+	Electrum(14.895, 135, "blocks/storage_electrum"), //Strength is a guess ((GOLD+SILVER)/2), if anyone has better data I'll put it in. Density is also ((GOLD+SILVER)/2)
+	Platinum(21.45, 240, "blockPlatinum", true),
 	Silver(10.49, 170, "blocks/storage_silver"),
-	Electrum((Silver.density + Gold.density) / 2e3, (Silver.tensileStrength + Gold.tensileStrength) / 2e6, "blocks/storage_electrum"), //Tensile strength is a guess ((GOLD+SILVER)/2), if anyone has better data I'll put it in
 	Aluminum(2.7, 45, "blocks/storage_aluminum"),
 	Nickel(8.908, 165, "blocks/storage_nickel"),
 	Uranium(19.1, 400, "blocks/storage_uranium_side"), // This is a bit silly. But why not.
 	Copper(8.96, 220, "blocks/storage_copper"),
 	Tin(5.7, 220, "blockTin", true),
+	Osmium(22.59, 1000, "blockOsmium", true),
 	Iron(7.874, 350, new ResourceLocation("minecraft", "blocks/iron_block")),
+	Invar((Iron.density * 2 + Nickel.density) / 3e3, 445, "blockInvar", true),
 	Titanium(4.51, 293, "blockTitanium", true),
 	Constantan(8.885, 600, "blocks/storage_constantan"),
 	Bronze(7.6, 550, "blockBronze", true),
