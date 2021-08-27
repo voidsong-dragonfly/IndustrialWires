@@ -70,9 +70,8 @@ public class IWConfig {
 		@Comment({"The efficiency of the conversion from IC2 kinetic energy to IE rotational energy"})
 		public static double kinToRotEfficiency = .8;
 
-		@Comment({"The conversion factor between Joules (the SI unit) and RF. Used for the Marx generator and the rotary converters",
-				"With the default value the IE diesel generator produces 200kW"})
-		public static double joulesPerRF = 200e3 / (20 * IEConfig.Machines.dieselGen_output);
+		@Comment({"The conversion factor between Joules (the SI unit) and RF. Used for the Marx generator and the rotary converters"})
+		public static double joulesPerRF = 21.276595744679;
 		@Comment({"What energy types can be used with the mechanical multiblock. 0: None (Probably useless),",
 				"1: EU (Currently useless), 2: FE, 3:EU and FE (allows conversion, default)"})
 		public static int multiblockEnergyType = 3;
