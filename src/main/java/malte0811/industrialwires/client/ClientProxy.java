@@ -481,14 +481,16 @@ public class ClientProxy extends CommonProxy {
 				null, null);
 		TextureAtlasSprite sprite = texModel.getParticleTexture();
 		//noinspection ConstantConditions
-		if (sprite == null || sprite.hasAnimationMetadata()) {
+		if (sprite == null || sprite.hasAnimationMetadata() || sprite.getFrameTextureData(0) == null) {
 			return false;
 		}
 		int[][] data = sprite.getFrameTextureData(0);
-		for (int x = 0; x < data.length; x++) {
-			for (int y = 0; y < data[x].length; y++) {
-				if ((data[x][y] >>> 24) != 255) {
-					return false;
+		for (int[] datum : data) {
+			if (datum != null ) {
+				for (int i : datum) {
+					if ((i >>> 24) != 255) {
+						return false;
+					}
 				}
 			}
 		}

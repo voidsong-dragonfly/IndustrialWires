@@ -1,5 +1,8 @@
 ###Minecraft 1.12.2
 
+####Version 1.7-35
+ - Fixed a crash with rendering _something_ in JEI in specific circumstances. Dunno what, but it sure did happen
+
 ####Version 1.7-36
  - Added an RGB indicator light, controlled by 3 (independent) RS signals
  - Fixed a bug allowing for unfinished control panels to be duplicated
