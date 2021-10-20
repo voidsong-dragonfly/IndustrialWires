@@ -48,7 +48,6 @@ import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.LoaderState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import java.util.Comparator;
@@ -157,10 +156,8 @@ public abstract class MechMBPart {
 		REGISTRY.put("flywheel", MechPartFlywheel.class);
 		REGISTRY.put("singleCoil", MechPartSingleCoil.class);
 		REGISTRY.put("twoElectrodes", MechPartTwoElectrodes.class);
-		REGISTRY.put("commutator", MechPartCommutator.class);
 		REGISTRY.put(SHAFT_KEY, MechPartShaft.class);
 		REGISTRY.put("speedometer", MechPartSpeedometer.class);
-		REGISTRY.put("commFour", MechPartCommutator4Phase.class);
 		REGISTRY.put("fourCoils", MechPartFourCoils.class);
 		REGISTRY.put("fourElectrodes", MechPartFourElectrodes.class);
 

@@ -16,7 +16,6 @@
 package malte0811.industrialwires.mech_mb;
 
 import com.google.common.collect.ImmutableList;
-import malte0811.industrialwires.IWConfig;
 import malte0811.industrialwires.IndustrialWires;
 import malte0811.industrialwires.blocks.converter.MechanicalMBBlockType;
 import malte0811.industrialwires.util.LocalSidedWorld;
@@ -88,7 +87,7 @@ public class MechPartFourElectrodes extends MechPartTwoElectrodes {
 
 	@Override
 	public double getMaxSpeed() {
-		return IWConfig.MechConversion.allowMBFE()?600:-1;
+		return 600;
 	}
 
 

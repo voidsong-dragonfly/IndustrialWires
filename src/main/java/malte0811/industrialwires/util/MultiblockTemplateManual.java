@@ -17,7 +17,6 @@ package malte0811.industrialwires.util;
 
 import blusunrize.immersiveengineering.api.MultiblockHandler;
 import blusunrize.immersiveengineering.api.crafting.IngredientStack;
-import malte0811.industrialwires.compat.Compat;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
@@ -34,7 +33,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 //This is just for manual entries
 public class MultiblockTemplateManual implements MultiblockHandler.IMultiblock {
@@ -56,8 +56,7 @@ public class MultiblockTemplateManual implements MultiblockHandler.IMultiblock {
 	}
 
 	private void updateTemplate() {
-		if (template == null)
-		{
+		if (template == null) {
 			template = RES_LOC_TEMPLATE_MANAGER.getTemplate(null, loc);
 			Vec3i size = template.getSize();
 			fakeStructure = new ItemStack[size.getY()][size.getX()][size.getZ()];
@@ -69,24 +68,6 @@ public class MultiblockTemplateManual implements MultiblockHandler.IMultiblock {
 				}
 			}
 			realStructure = new IdentityHashMap<>();
-			List<Template.BlockInfo> blocks = template.blocks;
-			Set<ItemStack> matsSet = new HashSet<>();
-			for (Template.BlockInfo info : blocks) {
-				ItemStack here = Compat.stackFromInfo.apply(new ItemStack(info.blockState.getBlock(), 1,
-						info.blockState.getBlock().getMetaFromState(info.blockState)), info);
-				if (!here.isEmpty()) {
-					fakeStructure[info.pos.getY()][info.pos.getX()][info.pos.getZ()] = here;
-					realStructure.put(here,
-							info.blockState);
-					Optional<ItemStack> match = matsSet.stream().filter(s -> ItemStack.areItemsEqual(here, s)).findAny();
-					if (match.isPresent()) {
-						match.get().grow(1);
-					} else {
-						matsSet.add(here);
-					}
-				}
-			}
-			mats = matsSet.stream().map(IngredientStack::new).toArray(IngredientStack[]::new);
 		}
 	}
 

@@ -39,10 +39,6 @@ public class IEObjects {
 	//ITEMS
 	@GameRegistry.ObjectHolder(ImmersiveEngineering.MODID+":earmuffs")
 	public static Item itemEarmuffs = nullNotNull();
-	@GameRegistry.ObjectHolder(ImmersiveEngineering.MODID+":material")
-	public static Item itemMaterial = nullNotNull();
-	@GameRegistry.ObjectHolder(ImmersiveEngineering.MODID+":wirecoil")
-	public static Item itemWireCoil = nullNotNull();
 	@GameRegistry.ObjectHolder(ImmersiveEngineering.MODID+":tool")
 	public static Item itemTool = nullNotNull();
 

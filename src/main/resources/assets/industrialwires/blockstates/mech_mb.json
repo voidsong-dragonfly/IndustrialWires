@@ -16,10 +16,8 @@
     "inventory,type=other_end": [{}],
     "inventory,type=flywheel": [{}],
     "inventory,type=coil_1_phase": [{}],
-    "inventory,type=shaft_commutator": [{}],
     "inventory,type=shaft_1_phase": [{}],
     "inventory,type=coil_4_phase": [{}],
-    "inventory,type=shaft_commutator_4": [{}],
     "inventory,type=shaft_4_phase": [{}],
     "inventory,type=speedometer": [{}],
     "inventory,type=shaft_basic": [{}],
@@ -43,22 +41,10 @@
       "coil_4_phase": {
         "model": "industrialwires:mech_mb/mag_ring.obj"
       },
-      "shaft_commutator": {
-        "model": "industrialwires:mbio",
-        "custom": {
-          "base_model": "industrialwires:block/mech_mb/commutator.obj"
-        }
-      },
       "shaft_1_phase": {
         "model": "industrialwires:mbio",
         "custom": {
           "base_model": "industrialwires:block/mech_mb/two_electrodes.obj"
-        }
-      },
-      "shaft_commutator_4": {
-        "model": "industrialwires:mbio",
-        "custom": {
-          "base_model": "industrialwires:block/mech_mb/commutator4.obj"
         }
       },
       "shaft_4_phase": {

@@ -16,7 +16,6 @@
 package malte0811.industrialwires.mech_mb;
 
 import com.google.common.collect.ImmutableList;
-import malte0811.industrialwires.IWConfig;
 import malte0811.industrialwires.IndustrialWires;
 import malte0811.industrialwires.blocks.converter.MechanicalMBBlockType;
 import malte0811.industrialwires.util.LocalSidedWorld;
@@ -48,9 +47,6 @@ public class MechPartTwoElectrodes extends MechPartEnergyIO {
 
 	@Override
 	public boolean canForm(LocalSidedWorld w) {
-		if (!IWConfig.MechConversion.allowMBFE()) {
-			return false;
-		}
 		IBlockState state = w.getBlockState(ORIGIN);
 		return state.getBlock()== blockMetalDecoration0 &&
 				state.getValue(blockMetalDecoration0.property)== GENERATOR;

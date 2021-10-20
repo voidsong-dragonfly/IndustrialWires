@@ -15,56 +15,19 @@
 
 package malte0811.industrialwires.util;
 
-import blusunrize.immersiveengineering.ImmersiveEngineering;
-import blusunrize.immersiveengineering.api.ApiUtils;
 import blusunrize.immersiveengineering.api.MultiblockHandler;
-import blusunrize.immersiveengineering.api.energy.wires.IImmersiveConnectable;
-import blusunrize.immersiveengineering.api.energy.wires.ImmersiveNetHandler;
-import blusunrize.immersiveengineering.common.util.Utils;
 import blusunrize.immersiveengineering.common.util.chickenbones.Matrix4;
-import com.google.common.collect.ImmutableSet;
-import malte0811.industrialwires.IndustrialWires;
-import malte0811.industrialwires.hv.MultiblockMarx;
-import net.minecraft.block.state.IBlockState;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntity;
+import malte0811.industrialwires.mech_mb.MultiblockMechMB;
 import net.minecraft.util.EnumFacing;
-import net.minecraft.util.Rotation;
 import net.minecraft.util.math.*;
-import net.minecraft.world.World;
-import net.minecraftforge.common.property.IExtendedBlockState;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.util.vector.Vector3f;
 
 import javax.annotation.Nonnull;
-import java.util.*;
-import java.util.function.BiPredicate;
 
 public final class MiscUtils {
 	private MiscUtils() {
-	}
-
-	public static List<BlockPos> discoverLocal(BlockPos here, BiPredicate<BlockPos, Integer> isValid) {
-		if (!isValid.test(here, 0)) {
-			return new ArrayList<>();
-		}
-		List<BlockPos> ret = new ArrayList<>();
-		Queue<BlockPos> open = new ArrayDeque<>();
-		open.add(here);
-		while (!open.isEmpty()) {
-			BlockPos curr = open.poll();
-			assert curr!=null;
-			ret.add(curr);
-			for (EnumFacing f : EnumFacing.VALUES) {
-				BlockPos next = curr.offset(f);
-				if (!open.contains(next) && !ret.contains(next) && isValid.test(next, ret.size())) {
-					open.offer(next);
-				}
-			}
-		}
-		return ret;
 	}
 
 	public static BlockPos offset(BlockPos p, EnumFacing f, boolean mirror, Vec3i relative) {
@@ -142,103 +105,6 @@ public final class MiscUtils {
 		return new AxisAlignedBB(min.x, min.y, min.z, max.x, max.y, max.z);
 	}
 
-	public static float[] interpolate(double a, float[] cA, double b, float[] cB) {
-		float[] ret = new float[cA.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = (float) (a * cA[i] + b * cB[i]);
-		}
-		return ret;
-	}
-
-	// Taken from TEImmersiveConnectable
-
-
-	public static Set<ImmersiveNetHandler.Connection> genConnBlockstate(Set<ImmersiveNetHandler.Connection> conns, World world) {
-		if (conns == null)
-			return ImmutableSet.of();
-		Set<ImmersiveNetHandler.Connection> ret = new HashSet<ImmersiveNetHandler.Connection>() {
-			@Override
-			public boolean equals(Object o) {
-				if (o == this)
-					return true;
-				if (!(o instanceof HashSet))
-					return false;
-				HashSet<ImmersiveNetHandler.Connection> other = (HashSet<ImmersiveNetHandler.Connection>) o;
-				if (other.size() != this.size())
-					return false;
-				for (ImmersiveNetHandler.Connection c : this)
-					if (!other.contains(c))
-						return false;
-				return true;
-			}
-		};
-		for (ImmersiveNetHandler.Connection c : conns) {
-			IImmersiveConnectable end = ApiUtils.toIIC(c.end, world, false);
-			if (end == null)
-				continue;
-			// generate subvertices
-			c.getSubVertices(world);
-			ret.add(c);
-		}
-
-		return ret;
-	}
-
-	public static void writeConnsToNBT(NBTTagCompound nbt, TileEntity te) {
-		World world = te.getWorld();
-		if (world != null && !world.isRemote && nbt != null) {
-			NBTTagList connectionList = new NBTTagList();
-			Set<ImmersiveNetHandler.Connection> conL = ImmersiveNetHandler.INSTANCE.getConnections(world, Utils.toCC(te));
-			if (conL != null)
-				for (ImmersiveNetHandler.Connection con : conL)
-					connectionList.appendTag(con.writeToNBT());
-			nbt.setTag("connectionList", connectionList);
-		}
-	}
-
-	public static void loadConnsFromNBT(NBTTagCompound nbt, TileEntity te) {
-		World world = te.getWorld();
-		if (world != null && world.isRemote && !IndustrialWires.proxy.isSingleplayer() && nbt != null) {
-			NBTTagList connectionList = nbt.getTagList("connectionList", 10);
-			ImmersiveNetHandler.INSTANCE.clearConnectionsOriginatingFrom(Utils.toCC(te), world);
-			for (int i = 0; i < connectionList.tagCount(); i++) {
-				NBTTagCompound conTag = connectionList.getCompoundTagAt(i);
-				ImmersiveNetHandler.Connection con = ImmersiveNetHandler.Connection.readFromNBT(conTag);
-				if (con != null) {
-					ImmersiveNetHandler.INSTANCE.addConnection(world, Utils.toCC(te), con);
-				} else
-					IndustrialWires.logger.error("CLIENT read connection as null");
-			}
-		}
-	}
-
-	public static boolean handleUpdate(int id, BlockPos pos, World world) {
-		if (id == -1 || id == 255) {
-			IBlockState state = world.getBlockState(pos);
-			world.notifyBlockUpdate(pos, state, state, 3);
-			return true;
-		} else if (id == 254) {
-			IBlockState state = world.getBlockState(pos);
-			if (state instanceof IExtendedBlockState) {
-				state = state.getActualState(world, pos);
-				state = state.getBlock().getExtendedState(state, world, pos);
-				ImmersiveEngineering.proxy.removeStateFromSmartModelCache((IExtendedBlockState) state);
-				ImmersiveEngineering.proxy.removeStateFromConnectionModelCache((IExtendedBlockState) state);
-			}
-			world.notifyBlockUpdate(pos, state, state, 3);
-			return true;
-		}
-		return false;
-	}
-	//End of code from TEImmersiveConnectable
-
-	@SideOnly(Side.CLIENT)
-	public static Vec2f rotate90(Vec2f in) {
-		//Yes, when rotating by 90 degrees, x becomes y!
-		//noinspection SuspiciousNameCombination
-		return new Vec2f(-in.y, in.x);
-	}
-
 	@SideOnly(Side.CLIENT)
 	public static Vec2f subtract(Vec2f a, Vec2f b) {
 		return new Vec2f(a.x-b.x, a.y-b.y);
@@ -267,42 +133,6 @@ public final class MiscUtils {
 		return ret;
 	}
 
-
-	public static EnumFacing applyRotationToFacing(Rotation rot, EnumFacing facing)
-	{
-		switch(rot)
-		{
-			case CLOCKWISE_90:
-				facing = facing.rotateY();
-				break;
-			case CLOCKWISE_180:
-				facing = facing.getOpposite();
-				break;
-			case COUNTERCLOCKWISE_90:
-				facing = facing.rotateYCCW();
-				break;
-		}
-		return facing;
-	}
-
-	public static Rotation getRotationBetweenFacings(EnumFacing orig, EnumFacing to)
-	{
-		if (to==orig)
-			return Rotation.NONE;
-		if (orig.getAxis()==EnumFacing.Axis.Y||to.getAxis()==EnumFacing.Axis.Y)
-			return null;
-		orig = orig.rotateY();
-		if (orig==to)
-			return Rotation.CLOCKWISE_90;
-		orig = orig.rotateY();
-		if (orig==to)
-			return Rotation.CLOCKWISE_180;
-		orig = orig.rotateY();
-		if (orig==to)
-			return Rotation.COUNTERCLOCKWISE_90;
-		return null;//This shouldn't ever happen
-	}
-
 	public static String toSnakeCase(String in) {
 		StringBuilder ret = new StringBuilder(in.length());
 		ret.append(in.charAt(0));
@@ -323,17 +153,6 @@ public final class MiscUtils {
 				return mb;
 			}
 		}
-		return MultiblockMarx.INSTANCE;
-	}
-
-	public static <T extends TileEntity> T getLoadedTE(World w, BlockPos pos, Class<T> clazz) {
-		if (w.isBlockLoaded(pos)) {
-			TileEntity te = w.getTileEntity(pos);
-			if (te!=null && clazz.isAssignableFrom(te.getClass())) {
-				//noinspection unchecked
-				return (T) te;
-			}
-		}
-		return null;
+		return MultiblockMechMB.INSTANCE;
 	}
 }

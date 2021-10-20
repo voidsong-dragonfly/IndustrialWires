@@ -21,16 +21,14 @@ import blusunrize.immersiveengineering.common.blocks.IEBlockInterfaces.IRedstone
 import blusunrize.immersiveengineering.common.blocks.metal.BlockTypes_MetalDecoration0;
 import blusunrize.immersiveengineering.common.util.Utils;
 import com.google.common.collect.MapMaker;
-import ic2.api.energy.tile.IEnergyAcceptor;
-import ic2.api.energy.tile.IEnergyEmitter;
-import ic2.api.energy.tile.IEnergySink;
-import ic2.api.energy.tile.IEnergySource;
 import malte0811.industrialwires.IndustrialWires;
 import malte0811.industrialwires.blocks.IBlockBoundsIW.IBlockBoundsDirectional;
 import malte0811.industrialwires.blocks.ISyncReceiver;
 import malte0811.industrialwires.blocks.TileEntityIWMultiblock;
-import malte0811.industrialwires.compat.Compat;
-import malte0811.industrialwires.mech_mb.*;
+import malte0811.industrialwires.mech_mb.IMBPartElectric;
+import malte0811.industrialwires.mech_mb.MechEnergy;
+import malte0811.industrialwires.mech_mb.MechMBPart;
+import malte0811.industrialwires.mech_mb.Waveform;
 import malte0811.industrialwires.network.MessageTileSyncIW;
 import malte0811.industrialwires.util.LocalSidedWorld;
 import net.minecraft.block.Block;
@@ -49,7 +47,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
-import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.oredict.OreDictionary;
@@ -61,16 +58,11 @@ import java.util.*;
 import static blusunrize.immersiveengineering.common.blocks.metal.BlockTypes_MetalDecoration0.HEAVY_ENGINEERING;
 import static malte0811.industrialwires.IEObjects.blockMetalDecoration0;
 import static malte0811.industrialwires.IndustrialWires.MMB_BREAKING;
-import static malte0811.industrialwires.mech_mb.EUCapability.ENERGY_IC2;
 import static malte0811.industrialwires.util.MiscUtils.getOffset;
 import static malte0811.industrialwires.util.MiscUtils.offset;
 import static malte0811.industrialwires.util.NBTKeys.*;
 
-@net.minecraftforge.fml.common.Optional.InterfaceList({
-		@net.minecraftforge.fml.common.Optional.Interface(iface = "ic2.api.energy.tile.IEnergySource", modid = "ic2"),
-		@Optional.Interface(iface = "ic2.api.energy.tile.IEnergySink", modid = "ic2")
-})
-public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickable, ISyncReceiver, IEnergySource, IEnergySink, IPlayerInteraction, IRedstoneOutput, IBlockBoundsDirectional {
+public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickable, ISyncReceiver, IPlayerInteraction, IRedstoneOutput, IBlockBoundsDirectional {
 	public static final double TICK_ANGLE_PER_SPEED = 180 / 20 / Math.PI;
 	private static final double SYNC_THRESHOLD = .95;
 	private static final Map<BlockPos, TileEntityMechMB> CLIENT_MASTER_BY_POS = new MapMaker().weakValues().makeMap();
@@ -93,7 +85,6 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	public void update() {
 		ApiUtils.checkForNeedlessTicking(this);
 		if (firstTick && !world.isRemote) {
-			Compat.loadIC2Tile.accept(this);
 			firstTick = false;
 		}
 		if (isLogicDummy() || mechanical == null || mechanical.length==0) {
@@ -522,86 +513,9 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 		}
 	}
 
-	private EUCapability.IC2EnergyHandler getIC2Cap() {
-		return ENERGY_IC2 != null ? getCapability(ENERGY_IC2, null) : null;
-	}
-
-	@Override
-	public boolean emitsEnergyTo(IEnergyAcceptor output, EnumFacing side) {
-		if (ENERGY_IC2 == null)
-			return false;
-		Vec3i offsetDirectional = getOffsetDir();
-		TileEntityMechMB master = masterOr(this, this);
-		int id = getPart(offsetDirectional.getZ(), master);
-		if (id < 0) {
-			return false;
-		}
-		MechMBPart part = master.mechanical[id];
-		BlockPos offsetPart = new BlockPos(offsetDirectional.getX(), offsetDirectional.getY(), offsetDirectional.getZ() - master.offsets[id]);
-		EUCapability.IC2EnergyHandler cap = part.getCapability(ENERGY_IC2, part.world.realToTransformed(side), offsetPart);
-		return cap != null;
-	}
-
-	@Override
-	public double getDemandedEnergy() {
-		EUCapability.IC2EnergyHandler cap = getIC2Cap();
-		return cap != null ? cap.getDemandedEnergy() : 0;
-	}
-
-	@Override
-	public int getSinkTier() {
-		EUCapability.IC2EnergyHandler cap = getIC2Cap();
-		return cap != null ? cap.getEnergyTier() : 0;
-	}
-
-	@Override
-	public double injectEnergy(EnumFacing enumFacing, double amount, double voltage) {
-		EUCapability.IC2EnergyHandler cap = getIC2Cap();
-		return cap != null ? cap.injectEnergy(enumFacing, amount, voltage) : 0;
-	}
-
-	@Override
-	public boolean acceptsEnergyFrom(IEnergyEmitter input, EnumFacing side) {
-		if (ENERGY_IC2 == null)
-			return false;
-		Vec3i offsetDirectional = getOffsetDir();
-		TileEntityMechMB master = masterOr(this, this);
-		int id = getPart(offsetDirectional.getZ(), master);
-		if (id < 0) {
-			return false;
-		}
-		MechMBPart part = master.mechanical[id];
-		BlockPos offsetPart = new BlockPos(offsetDirectional.getX(), offsetDirectional.getY(), offsetDirectional.getZ() - master.offsets[id]);
-		EUCapability.IC2EnergyHandler cap = part.getCapability(ENERGY_IC2, part.world.realToTransformed(side), offsetPart);
-		return cap != null;
-	}
-
-	@Override
-	public double getOfferedEnergy() {
-		EUCapability.IC2EnergyHandler cap = getIC2Cap();
-		return cap != null ? cap.getOfferedEnergy() : 0;
-	}
-
-	@Override
-	public void drawEnergy(double amount) {
-		EUCapability.IC2EnergyHandler cap = getIC2Cap();
-		if (cap != null) {
-			cap.drawEnergy(amount);
-		}
-	}
-
-	@Override
-	public int getSourceTier() {
-		EUCapability.IC2EnergyHandler cap = getIC2Cap();
-		return cap != null ? cap.getEnergyTier() : 0;
-	}
-
-
 	@Override
 	public void invalidate() {
-		if (!world.isRemote && !firstTick)
-			Compat.unloadIC2Tile.accept(this);
-		else if (world.isRemote)
+		if (world.isRemote)
 			CLIENT_MASTER_BY_POS.remove(pos);
 		firstTick = true;
 		if (energyState!=null)
@@ -612,9 +526,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	@Override
 	public void onChunkUnload() {
 		super.onChunkUnload();
-		if (!world.isRemote && !firstTick)
-			Compat.unloadIC2Tile.accept(this);
-		else if (world.isRemote)
+		if (world.isRemote)
 			CLIENT_MASTER_BY_POS.remove(pos);
 		if (energyState!=null)
 			energyState.invalid = true;

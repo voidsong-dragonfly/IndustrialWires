@@ -16,7 +16,6 @@
 package malte0811.industrialwires.mech_mb;
 
 
-import malte0811.industrialwires.IWConfig;
 import net.minecraft.util.math.MathHelper;
 
 public final class MechEnergy {

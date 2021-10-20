@@ -17,9 +17,7 @@ package malte0811.industrialwires.mech_mb;
 
 import blusunrize.immersiveengineering.api.IEEnums.SideConfig;
 import blusunrize.immersiveengineering.common.util.Utils;
-import malte0811.industrialwires.IWConfig;
 import malte0811.industrialwires.blocks.IWProperties;
-import malte0811.industrialwires.mech_mb.EUCapability.IC2EnergyHandler;
 import malte0811.industrialwires.util.ConversionUtil;
 import malte0811.industrialwires.util.MBSideConfig;
 import malte0811.industrialwires.util.MBSideConfig.BlockFace;
@@ -43,11 +41,9 @@ import java.util.List;
 
 import static blusunrize.immersiveengineering.api.IEEnums.SideConfig.INPUT;
 import static blusunrize.immersiveengineering.api.IEEnums.SideConfig.OUTPUT;
-import static malte0811.industrialwires.mech_mb.EUCapability.ENERGY_IC2;
 import static malte0811.industrialwires.mech_mb.Waveform.Phases.get;
 import static malte0811.industrialwires.mech_mb.Waveform.Speed.EXTERNAL;
 import static malte0811.industrialwires.mech_mb.Waveform.Speed.ROTATION;
-import static malte0811.industrialwires.mech_mb.Waveform.Type.DC;
 import static malte0811.industrialwires.mech_mb.Waveform.Type.NONE;
 import static malte0811.industrialwires.util.NBTKeys.*;
 import static net.minecraftforge.energy.CapabilityEnergy.ENERGY;
@@ -58,7 +54,6 @@ public abstract class MechPartEnergyIO extends MechMBPart implements IMBPartElec
 	private double bufferToWorld;
 	private Waveform wfToWorld = Waveform.forParameters(NONE, get(has4Phases()), ROTATION);
 	private final IEnergyStorage[] capForge = {new EnergyStorageMMB(INPUT), new EnergyStorageMMB(OUTPUT)};
-	private final IC2EnergyHandler[] capIc2 = {new IC2EHandlerMB(INPUT), new IC2EHandlerMB(OUTPUT)};
 	private MBSideConfig sides = new MBSideConfig(getEnergyConnections());
 
 	@Override
@@ -107,9 +102,6 @@ public abstract class MechPartEnergyIO extends MechMBPart implements IMBPartElec
 		BlockFace s = new BlockFace(pos, side);
 		SideConfig conf = sides.getConfigForFace(s);
 		if (conf!=SideConfig.NONE) {
-			if (cap == ENERGY_IC2) {
-				return ENERGY_IC2.cast(capIc2[conf.ordinal()-1]);
-			}
 			if (cap == ENERGY) {
 				return ENERGY.cast(capForge[conf.ordinal()-1]);
 			}
@@ -120,9 +112,6 @@ public abstract class MechPartEnergyIO extends MechMBPart implements IMBPartElec
 	@Override
 	public <T> boolean hasCapability(Capability<T> cap, EnumFacing side, BlockPos pos) {
 		if (sides.getConfigForFace(new BlockFace(pos, side))!=SideConfig.NONE) {
-			if (cap == ENERGY_IC2) {
-				return true;
-			}
 			if (cap == ENERGY) {
 				return true;
 			}
@@ -158,7 +147,7 @@ public abstract class MechPartEnergyIO extends MechMBPart implements IMBPartElec
 
 	@Override
 	public double getMaxSpeed() {
-		return IWConfig.MechConversion.allowMBEU()?100:-1;
+		return -1;
 	}
 
 	@Override
@@ -228,55 +217,6 @@ public abstract class MechPartEnergyIO extends MechMBPart implements IMBPartElec
 			}
 		}
 		return extracted;
-	}
-
-	class IC2EHandlerMB extends IC2EnergyHandler {
-		private SideConfig type;
-
-		{
-			tier = 3;//TODO does this mean everything blows up?
-		}
-
-		IC2EHandlerMB(SideConfig type) {
-			this.type = type;
-		}
-
-		@Override
-		public double injectEnergy(EnumFacing side, double amount, double voltage) {
-			double buffer = bufferToMB;
-			double input = amount * ConversionUtil.joulesPerEu();
-			if (!wfToMB.isDC()) {
-				buffer = 0;
-			}
-			input = Math.min(input, getMaxBuffer()-buffer);
-			buffer += input;
-			bufferToMB = buffer;
-			wfToMB = Waveform.forParameters(DC, get(has4Phases()), EXTERNAL);
-			return amount-ConversionUtil.euPerJoule()*input;
-		}
-
-		@Override
-		public double getOfferedEnergy() {
-			if (wfToWorld.isDC() && type==OUTPUT) {
-				return Math.min(ConversionUtil.euPerJoule()*bufferToWorld,
-						ConversionUtil.euPerJoule()*getMaxBuffer())/getEnergyConnections().size();
-			}
-			return 0;
-		}
-
-		@Override
-		public double getDemandedEnergy() {
-			if (type==INPUT) {
-				return Math.min(ConversionUtil.euPerJoule()*(getMaxBuffer()-bufferToMB),
-						ConversionUtil.euPerJoule()*getMaxBuffer())/getEnergyConnections().size();
-			}
-			return 0;
-		}
-
-		@Override
-		public void drawEnergy(double amount) {
-			bufferToWorld -= ConversionUtil.joulesPerEu()*amount;
-		}
 	}
 
 	class EnergyStorageMMB implements IEnergyStorage {
