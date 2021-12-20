@@ -120,8 +120,7 @@ public abstract class BlockIWBase extends Block {
 	}
 
 	@Override
-	public void addCollisionBoxToList(IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox,
-									  @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_) {
+	public void addCollisionBoxToList(IBlockState state, @Nonnull World worldIn, @Nonnull BlockPos pos, @Nonnull AxisAlignedBB entityBox, @Nonnull List<AxisAlignedBB> collidingBoxes, @Nullable Entity entityIn, boolean p_185477_7_) {
 		AxisAlignedBB aabb = getBoundingBox(state, worldIn, pos).offset(pos);
 		if (entityBox.intersects(aabb)) {
 			collidingBoxes.add(aabb);
@@ -130,8 +129,7 @@ public abstract class BlockIWBase extends Block {
 
 	//mostly copied from IE
 	@Override
-	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player,
-									EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
+	public boolean onBlockActivated(World world, BlockPos pos, IBlockState state, EntityPlayer player, EnumHand hand, EnumFacing side, float hitX, float hitY, float hitZ) {
 		TileEntity te = world.getTileEntity(pos);
 		ItemStack heldItem = player.getHeldItem(hand);
 		if (te instanceof IEBlockInterfaces.IDirectionalTile && Utils.isHammer(heldItem) && !world.isRemote) {
@@ -158,9 +156,7 @@ public abstract class BlockIWBase extends Block {
 			}
 		}
 		if (te instanceof IPlayerInteraction) {
-			if (((IPlayerInteraction) te).interact(side, player, hand, heldItem, hitX, hitY, hitZ)) {
-				return true;
-			}
+			return ((IPlayerInteraction) te).interact(side, player, hand, heldItem, hitX, hitY, hitZ);
 		}
 		return false;
 	}

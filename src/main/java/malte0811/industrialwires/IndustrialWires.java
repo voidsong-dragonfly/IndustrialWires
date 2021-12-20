@@ -15,9 +15,7 @@
 package malte0811.industrialwires;
 
  import blusunrize.immersiveengineering.api.MultiblockHandler;
- import blusunrize.immersiveengineering.common.blocks.metal.BlockTypes_MetalDecoration0;
  import malte0811.industrialwires.blocks.BlockIWBase;
- import malte0811.industrialwires.blocks.TEDataFixer;
  import malte0811.industrialwires.blocks.converter.BlockMechanicalMB;
  import malte0811.industrialwires.blocks.converter.TileEntityMechMB;
  import malte0811.industrialwires.entities.EntityBrokenPart;
@@ -26,16 +24,11 @@ package malte0811.industrialwires;
  import malte0811.industrialwires.network.MessageTileSyncIW;
  import malte0811.industrialwires.util.MultiblockTemplateManual;
  import net.minecraft.block.Block;
- import net.minecraft.item.Item;
- import net.minecraft.item.ItemStack;
  import net.minecraft.network.datasync.DataSerializers;
  import net.minecraft.network.datasync.EntityDataManager;
  import net.minecraft.util.ResourceLocation;
  import net.minecraft.util.SoundEvent;
- import net.minecraft.util.datafix.FixTypes;
- import net.minecraftforge.common.util.ModFixs;
  import net.minecraftforge.event.RegistryEvent;
- import net.minecraftforge.fml.common.FMLCommonHandler;
  import net.minecraftforge.fml.common.Mod;
  import net.minecraftforge.fml.common.Mod.EventHandler;
  import net.minecraftforge.fml.common.SidedProxy;
@@ -48,7 +41,6 @@ package malte0811.industrialwires;
  import net.minecraftforge.fml.common.registry.EntityRegistry;
  import net.minecraftforge.fml.common.registry.GameRegistry;
  import net.minecraftforge.fml.relauncher.Side;
- import net.minecraftforge.oredict.OreDictionary;
  import org.apache.logging.log4j.Logger;
 
  import java.util.ArrayList;
@@ -76,7 +68,6 @@ public class IndustrialWires {
 	}
 
 	public static final List<BlockIWBase> blocks = new ArrayList<>();
-	public static final List<Item> items = new ArrayList<>();
 
 	@GameRegistry.ObjectHolder(MODID+":"+BlockMechanicalMB.NAME)
 	public static BlockMechanicalMB mechanicalMB = null;
@@ -122,8 +113,6 @@ public class IndustrialWires {
 	@EventHandler
 	public void init(FMLInitializationEvent e) {
 
-		OreDictionary.registerOre("blockBearing", new ItemStack(IEObjects.blockMetalDecoration0, 1, BlockTypes_MetalDecoration0.HEAVY_ENGINEERING.getMeta()));
-
 		MultiblockMechMB.INSTANCE = new MultiblockMechMB();
 		MultiblockHandler.registerMultiblock(MultiblockMechMB.INSTANCE);
 		MultiblockHandler.registerMultiblock(new MultiblockTemplateManual(EXAMPLE_MECHMB_LOC));
@@ -131,8 +120,6 @@ public class IndustrialWires {
 		packetHandler.registerMessage(MessageTileSyncIW.HandlerClient.class, MessageTileSyncIW.class, 0, Side.CLIENT);
 
 		MechMBPart.init();
-		ModFixs fixer = FMLCommonHandler.instance().getDataFixer().init(MODID, DATAFIXER_VER);
-		fixer.registerFix(FixTypes.BLOCK_ENTITY, new TEDataFixer());
 	}
 
 	@EventHandler

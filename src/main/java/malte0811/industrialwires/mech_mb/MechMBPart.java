@@ -223,16 +223,6 @@ public abstract class MechMBPart {
 		return nbt;
 	}
 
-	public static boolean isValidDefaultCenter(IBlockState state) {
-		ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
-		return Utils.compareToOreName(stack, "blockBearing") || Utils.compareToOreName(stack, "blockBearingPerfect");
-	}
-
-	public static boolean isPerfectBearing(IBlockState state) {
-		ItemStack stack = new ItemStack(state.getBlock(), 1, state.getBlock().getMetaFromState(state));
-		return Utils.compareToOreName(stack, "blockBearingPerfect");
-	}
-
 	public static boolean isHeavyEngineering(IBlockState state) {
 		return state.getBlock()== blockMetalDecoration0 &&
 				state.getValue(blockMetalDecoration0.property)==BlockTypes_MetalDecoration0.HEAVY_ENGINEERING;

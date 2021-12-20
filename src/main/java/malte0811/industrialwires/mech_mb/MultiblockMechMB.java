@@ -46,21 +46,16 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 
 	@Override
 	public boolean isBlockTrigger(IBlockState state) {
-		return MechMBPart.isValidDefaultCenter(state);
+		return MechMBPart.isHeavyEngineering(state);
 	}
 
 	private boolean checkEnd(LocalSidedWorld w, BlockPos.PooledMutableBlockPos p) {
 		p.setPos(0, 0, 0);
-		if (!MechMBPart.isValidDefaultCenter(w.getBlockState(p))) {
+		if (!MechMBPart.isHeavyEngineering(w.getBlockState(p))) {
 			return false;
 		}
 		p.setPos(0, -1, 0);
 		return MechMBPart.isHeavyEngineering(w.getBlockState(p));
-	}
-
-	private boolean isBearingPerfect(LocalSidedWorld w, BlockPos.PooledMutableBlockPos p) {
-		p.setPos(0, 0, 0);
-		return MechMBPart.isPerfectBearing(w.getBlockState(p));
 	}
 
 	private void formEnd(LocalSidedWorld w, BlockPos.PooledMutableBlockPos p, MechanicalMBBlockType type,
@@ -94,8 +89,6 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 			int lastLength = 1;
 			double inertia = 0;
 			double weight = 0;
-			boolean isLossless1 = isBearingPerfect(w, mutPos);;
-			boolean isLossless = false;
 			while (!foundAll) {
 				mutPos.setPos(0, 0, lastLength);
 				w.setOrigin(w.getRealPos(mutPos));
@@ -106,12 +99,6 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 				for (MechMBPart part:instances) {
 					if (MechMBPart.SORT_BY_COUNT.compare(last, part) != 0 && checkEnd(w, mutPos)) {
 						foundAll = true;
-						if(isLossless1 != isBearingPerfect(w, mutPos)) {
-							return false;
-						} else if(isLossless1 && isBearingPerfect(w, mutPos)) {
-							isLossless = true;
-						}
-
 						break;
 					}
 					last = part;
@@ -136,14 +123,12 @@ public class MultiblockMechMB implements MultiblockHandler.IMultiblock {
 			}
 			double finalInertia = inertia;
 			double finalWeight = weight;
-			boolean finalIsLossless = isLossless;
 			w.setOrigin(pos);
 			formEnd(w, mutPos, END, (te, master) -> {
 				if (master) {
 					te.offset = BlockPos.ORIGIN;
 					te.setMechanical(parts.toArray(new MechMBPart[0]), 0);
 					te.energyState = new MechEnergy(finalWeight, finalInertia, 0);
-					te.isLossless = finalIsLossless;
 				} else {
 					te.offset = new BlockPos(0, -1, 0);
 				}

@@ -22,7 +22,6 @@ import net.minecraftforge.common.property.IUnlistedProperty;
 
 public final class IWProperties {
 	private IWProperties() {}
-	public static final PropertyEnum<MarxType> MARX_TYPE = PropertyEnum.create("marx_type", MarxType.class);
 	public static final IUnlistedProperty<MBSideConfig> MB_SIDES = new MBSideConfigProperty();
 	public enum MarxType implements IStringSerializable {
 		NO_MODEL,

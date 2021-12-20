@@ -55,10 +55,10 @@ public final class MechEnergy {
 		speed = Math.sqrt(2 * (oldEnergy - energy) / inertia);
 	}
 
-	public void decaySpeed(boolean lossless) {
+	public void decaySpeed() {
 		//Decay should use https://www.researchgate.net/publication/241703345_Power_Loss_Prediction_in_High-Speed_Roller_Bearings and https://spectrum.ieee.org/superconducting-flywheel-grid-energy-storage (I guess on the last one)
 		//W to J/t is 3.6 because 86400 (sec per day) divided by 24000 (ticks per MC day) is 3.6
-		double energy = (lossless ? 0.00625 : 1) * 3.6 * Math.pow(1.125, 0.00545 * speed) * (weight/25000);
+		double energy = 3.6 * Math.pow(1.125, 0.00545 * speed) * (weight/25000);
 		//Example function graph is here https://www.desmos.com/calculator/qz4wrimxqf
 		extractEnergy(energy);
 		if (speed < 0.1) speed = 0;

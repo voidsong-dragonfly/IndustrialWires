@@ -49,7 +49,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.Constants;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.oredict.OreDictionary;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -72,7 +71,6 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	private int[][] electricalStartEnd = null;
 
 	public MechEnergy energyState;
-	public boolean isLossless;
 	private double lastSyncedSpeed = 0;
 	public double angle;
 	@SideOnly(Side.CLIENT)
@@ -196,7 +194,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 		}
 
 		//General
-		energyState.decaySpeed(isLossless);
+		energyState.decaySpeed();
 		markDirty();
 		if (lastSyncedSpeed < energyState.getSpeed() * SYNC_THRESHOLD || lastSyncedSpeed > energyState.getSpeed() / SYNC_THRESHOLD) {
 			NBTTagCompound nbt = new NBTTagCompound();
@@ -297,7 +295,6 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			out.setDouble(SPEED, energyState.getSpeed());
 		}
 		out.setInteger(VERSION, structureVersion);
-		out.setBoolean(LOSSLESS, isLossless);
 	}
 
 	@Override
@@ -315,7 +312,6 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			setMechanical(mech, in.getDouble(SPEED));
 		}
 		structureVersion = in.getInteger(VERSION);
-		isLossless = in.getBoolean(LOSSLESS);
 		rBB = null;
 		aabb = null;
 	}
@@ -481,9 +477,8 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 	private void disassemble(Set<MechMBPart> failed) {
 		if (!world.isRemote && formed) {
 			formed = false;
-			world.setBlockState(pos, isLossless ? Block.getBlockFromItem(OreDictionary.getOres("blockBearingPerfect").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearingPerfect").get(0).getMetadata()) :  Block.getBlockFromItem(OreDictionary.getOres("blockBearing").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearing").get(0).getMetadata()));
-			world.setBlockState(pos.down(),
-					blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
+			world.setBlockState(pos, blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
+			world.setBlockState(pos.down(), blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
 			for (MechMBPart mech : mechanical) {
 				if (failed.contains(mech)) {
 					world.playSound(null, mech.world.getOrigin(), MMB_BREAKING, SoundCategory.BLOCKS, 1, 1);
@@ -507,8 +502,7 @@ public class TileEntityMechMB extends TileEntityIWMultiblock implements ITickabl
 			BlockPos otherEnd = offset(pos, facing.getOpposite(), mirrored, 0,
 					offsets[mechanical.length], 0);
 
-			//Set the opposite end to the correct blocks
-			world.setBlockState(otherEnd, isLossless ? Block.getBlockFromItem(OreDictionary.getOres("blockBearingPerfect").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearingPerfect").get(0).getMetadata()) :  Block.getBlockFromItem(OreDictionary.getOres("blockBearing").get(0).getItem()).getStateFromMeta(OreDictionary.getOres("blockBearing").get(0).getMetadata()));
+			world.setBlockState(otherEnd, blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
 			world.setBlockState(otherEnd.down(), blockMetalDecoration0.getDefaultState().withProperty(blockMetalDecoration0.property, HEAVY_ENGINEERING));
 		}
 	}

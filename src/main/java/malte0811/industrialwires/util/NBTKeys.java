@@ -19,37 +19,10 @@ public final class NBTKeys {
 
 	//General
 	public static final String ENERGY = "energy";
-	public static final String BUFFER = "buffer";
-	public static final String DIRECTION = "dir";
 	public static final String TYPE = "type";
 	public static final String BUFFER_IN = "inBuffer";
 	public static final String BUFFER_OUT = "outBuffer";
 	public static final String VERSION = "version";
-
-	//Control panels
-	public static final String HEIGHT = "height";
-	public static final String ANGLE = "angle";
-	public static final String COLOR = "color";
-	public static final String RS_CHANNEL = "rsChannel";
-	public static final String RS_ID = "rsId";
-	public static final String HAS_SECOND_CHANNEL = "has2ndChannel";
-	public static final String RS_CHANNEL2 = "rsChannel2";
-	public static final String RS_ID2 = "rsId2";
-	public static final String TEXT = "text";
-	public static final String HORIZONTAL = "horizontal";
-	public static final String LENGTH = "length";
-	public static final String LATCHING = "latching";
-	public static final String WIDE = "wide";
-	public static final String LOCK_ID = "lockId";
-	public static final String RING_KEYS = "ringkeys";
-	public static final String NAME = "name";
-	public static final String ID = "cfgId";
-	public static final String VALUE = "value";
-
-	//HV
-	public static final String STAGES = "stages";
-	public static final String HAS_CONN = "hasConn";
-	public static final String CAP_VOLTAGES = "capVoltages";
 
 	//Mechanical
 	public static final String PARTS = "parts";
@@ -60,7 +33,6 @@ public final class NBTKeys {
 	public static final String WAVEFORM = "Wf";
 	public static final String MAX_SPEED = "maxSpeed";
 	public static final String SIDE_CONFIG = "sideConfig";
-	public static final String LOSSLESS = "lossless";
 
 
 	private NBTKeys() {}
