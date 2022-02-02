@@ -94,15 +94,15 @@ public class MechPartSpeedometer extends MechMBPart implements IRedstoneOutput {
 	}
 
 	private int roundHysteresis(int old, double newExact) {
-		double mod = newExact%1;
 		final double THRESHOLD = .1;
 		int floor = (int) Math.floor(newExact);
 		if (floor == old) {
 			return old;
 		}
-		if (old<newExact && mod>THRESHOLD) {
+		if(old < 0) {
 			return floor;
-		} else if (old>newExact && mod<1-THRESHOLD) {
+		}
+		if (newExact > old + 1 + THRESHOLD || newExact < old - THRESHOLD) {
 			return floor;
 		}
 		return old;
