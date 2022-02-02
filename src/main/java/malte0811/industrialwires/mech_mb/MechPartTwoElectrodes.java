@@ -79,7 +79,7 @@ public class MechPartTwoElectrodes extends MechPartEnergyIO {
 	}
 
 	protected double getMaxBuffer() {
-		return 10e3;//200kW
+		return 87148.9361702F;//4096RF
 	}
 
 	protected boolean has4Phases() {

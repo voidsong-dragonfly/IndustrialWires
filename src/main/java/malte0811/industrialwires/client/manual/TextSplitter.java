@@ -229,6 +229,9 @@ public class TextSplitter {
 		if (Character.isWhitespace(start) ^ Character.isWhitespace(here)) {
 			ret = 0b10;
 		}
+		if(Character.UnicodeScript.of(here) == Character.UnicodeScript.HAN) {
+			ret = 0b10;
+		}
 		if (here == '<') {
 			ret = 0b10;
 		}
